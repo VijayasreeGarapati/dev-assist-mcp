@@ -11,3 +11,4 @@ unidiff
 transformers
 torch
 accelerate
+fastmcp

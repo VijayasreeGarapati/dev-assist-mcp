@@ -1,25 +1,17 @@
-# app/main.py
+from mcp.server.fastmcp import FastMCP
+from tools.analyse_pr import AnalyzePRInput, AnalyzePROutput, analyze_pr
 
-from fastapi import FastAPI, HTTPException
-from app.tools.analyse_pr import AnalyzePRInput, AnalyzePROutput, analyze_pr
+# Initialize the MCP server
+mcp = FastMCP("pr_analyzer_mcp")
 
-app = FastAPI(title="MCP Server for PR Analysis")
+# Define the tool
+@mcp.tool()
+def analyze_pr_tool(pr_diff_text: str):
+    """Analyze PR diff text and return structured output."""
+    result = analyze_pr(pr_diff_text)
+    # Return the dataclass directly, FastMCP will handle serialization
+    return result
 
-# -----------------------------
-# Health check endpoint
-# -----------------------------
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
-
-# -----------------------------
-# MCP endpoint for PR analysis
-# -----------------------------
-@app.post("/mcp", response_model=AnalyzePROutput)
-def mcp_analyze_pr(input_data: AnalyzePRInput):
-    try:
-        result = analyze_pr(input_data.pr_diff_text)
-        return result
-    except Exception as e:
-        # Catch any exceptions to avoid crashing
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
+# Run the server over STDIO for local testing
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
