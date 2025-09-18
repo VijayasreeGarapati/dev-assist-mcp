@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+pydantic
+httpx
+openai
+unidiff
+pytest
+anthropic
+PyGithub
+unidiff
+transformers
+torch
+accelerate
